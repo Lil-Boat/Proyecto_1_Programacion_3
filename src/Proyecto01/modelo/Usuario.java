@@ -5,6 +5,9 @@ public class Usuario extends Persona {
     protected int numeroSocio;
     protected int idUsuario;
 
+    // Indica si el socio tiene su pago al día (true) o presenta morosidad (false)
+    protected boolean pagoAlDia;
+
     public Usuario() {
     }
 
@@ -12,6 +15,13 @@ public class Usuario extends Persona {
         super(nombreCompleto, edad, correoElectronico, telefono);
         this.numeroSocio = numeroSocio;
         this.idUsuario = idUsuario;
+    }
+
+    public Usuario(String nombreCompleto, int edad, String correoElectronico, int telefono, int numeroSocio, int idUsuario, boolean pagoAlDia) {
+        super(nombreCompleto, edad, correoElectronico, telefono);
+        this.numeroSocio = numeroSocio;
+        this.idUsuario = idUsuario;
+        this.pagoAlDia = pagoAlDia;
     }
 
     public void setNumeroSocio(int numeroSocio) {
@@ -30,6 +40,14 @@ public class Usuario extends Persona {
         return numeroSocio;
     }
 
+    public boolean isPagoAlDia() {
+        return pagoAlDia;
+    }
+
+    public void setPagoAlDia(boolean pagoAlDia) {
+        this.pagoAlDia = pagoAlDia;
+    }
+
     @Override
     public String toString() {
         return "Usuario{" +
@@ -39,6 +57,7 @@ public class Usuario extends Persona {
                 ", idUsuario=" + idUsuario +
                 ", correoElectronico='" + correoElectronico + '\'' +
                 ", telefono=" + telefono +
+                ", pagoAlDia=" + pagoAlDia +
                 '}';
     }
 }
