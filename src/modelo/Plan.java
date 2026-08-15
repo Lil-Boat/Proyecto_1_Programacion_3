@@ -1,4 +1,9 @@
 package modelo;
 
-public class Plan {
+public interface Plan {
+
+    double calcularPrecio();
+    int getDuracionDias();
+    String getBeneficios();
+    String getNombre();
 }
