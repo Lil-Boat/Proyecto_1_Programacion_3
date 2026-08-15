@@ -1,4 +1,4 @@
-package Proyecto01.modelo;
+package modelo;
 
 public abstract class Persona {
 

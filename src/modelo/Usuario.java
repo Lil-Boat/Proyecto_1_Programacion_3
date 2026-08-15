@@ -1,4 +1,4 @@
-package Proyecto01.modelo;
+package modelo;
 
 public class Usuario extends Persona {
 
