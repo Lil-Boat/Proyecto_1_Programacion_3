@@ -83,15 +83,20 @@ public class FormularioMantenimiento extends JFrame {
         txtEdad = new JTextField();
         panelFormulario.add(txtEdad);
 
-        // [Fila 5] Número de socio
-        panelFormulario.add(new JLabel("Número de Socio:"));
+        // [Fila 5] Número de socio: etiqueta y caja juntas en la misma celda
+        JPanel filaNumeroSocio = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        filaNumeroSocio.add(new JLabel("Número de Socio:"));
         txtNumeroSocio = new JTextField();
-        panelFormulario.add(txtNumeroSocio);
+        txtNumeroSocio.setColumns(8);   // Ancho acorde al tamaño de un número de socio
+        filaNumeroSocio.add(envolverCampoCorto(txtNumeroSocio));
+        panelFormulario.add(filaNumeroSocio);
+        panelFormulario.add(new JLabel("")); // La celda de la derecha queda libre
 
         // [Fila 6] ID de usuario
         panelFormulario.add(new JLabel("ID de Usuario:"));
         txtIdUsuario = new JTextField();
-        panelFormulario.add(txtIdUsuario);
+        txtIdUsuario.setColumns(8);     // Ancho acorde al tamaño de un ID
+        panelFormulario.add(envolverCampoCorto(txtIdUsuario));
 
         // [Fila 7] Pago al día
         panelFormulario.add(new JLabel("Pago al día:"));
@@ -236,6 +241,15 @@ public class FormularioMantenimiento extends JFrame {
         recargarTabla();
         JOptionPane.showMessageDialog(this,
                 "Datos guardados correctamente: " + nombre);
+    }
+// Envuelve un campo en un panel FlowLayout para que conserven su ancho
+    // preferido en lugar de estirarse con el GridLayout.
+    // Recibe el campo a envolver y lo devuelve dentro de un panel angosto,
+    // conservando el tamaño lógico que indiquen sus columnas.
+    private JPanel envolverCampoCorto(JComponent campo) {
+        JPanel contenedor = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        contenedor.add(campo);
+        return contenedor;
     }
 
     // Carga en el formulario los datos del socio de la fila seleccionada

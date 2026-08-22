@@ -28,7 +28,7 @@ public class SistemaAcceso extends JFrame {
         setTitle("Sistema de Acceso");
 
         // Dimensiones: 1280 píxeles de ancho por 720 de alto
-        setSize(1280, 720);
+        setSize(600, 300);
 
         // Al tocar la 'X', el programa se detiene por completo
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -38,7 +38,7 @@ public class SistemaAcceso extends JFrame {
 
 
         // Contenedor principal con BorderLayout (5 regiones) y 10px de separación
-        JPanel panelPrincipal = new JPanel(new BorderLayout(5, 10));
+        JPanel panelPrincipal = new JPanel(new BorderLayout(10, 10));
 
         // Margen interno de 15px para no pegar el contenido con el borde
         panelPrincipal.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
@@ -47,16 +47,16 @@ public class SistemaAcceso extends JFrame {
         JLabel lblTitulo = new JLabel("Simulación de Acceso", SwingConstants.CENTER);
 
         // Aplica tipografía en negrita (BOLD) y tamaño 30
-        lblTitulo.setFont(new Font("Nunito", Font.BOLD, 30));
+        lblTitulo.setFont(new Font("Nunito", Font.BOLD, 18));
 
         // Color del texto: negro
-        lblTitulo.setForeground(new Color(0, 0, 0, 255));
+        lblTitulo.setForeground(new Color(200, 16, 46));
 
         // Lo coloca en la región superior (NORTH) del panel principal
         panelPrincipal.add(lblTitulo, BorderLayout.NORTH);
 
 
-        JPanel panelFormulario = new JPanel(new GridLayout(2, 2, 8, 8));
+        JPanel panelFormulario = new JPanel(new GridLayout(3, 2, 8, 8));
 
         // [Fila 1] Etiqueta + caja de texto para el número de socio
         panelFormulario.add(new JLabel("Número de Socio:"));
@@ -66,7 +66,7 @@ public class SistemaAcceso extends JFrame {
         // [Fila 2] Etiqueta + resultado de la verificación del pago
         panelFormulario.add(new JLabel("Estado del Pago:"));
         lblResultado = new JLabel("Ingrese su número de socio", SwingConstants.CENTER);
-        lblResultado.setFont(new Font("Nunito", Font.BOLD, 22));
+        lblResultado.setFont(new Font("Nunito", Font.BOLD, 18));
         lblResultado.setForeground(Color.GRAY);
         panelFormulario.add(lblResultado);
 
