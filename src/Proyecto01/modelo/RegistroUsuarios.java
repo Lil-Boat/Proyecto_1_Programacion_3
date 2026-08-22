@@ -25,6 +25,24 @@ public class RegistroUsuarios {
         usuarios.add(usuario);
     }
 
+    // Reemplaza al socio con número original indicado por el socio actualizado.
+    // Devuelve true si se encontró y actualizó al socio.
+    public boolean actualizar(int numeroSocioOriginal, Usuario actualizado) {
+        for (int i = 0; i < usuarios.size(); i++) {
+            if (usuarios.get(i).getNumeroSocio() == numeroSocioOriginal) {
+                usuarios.set(i, actualizado);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Elimina al socio con el número indicado.
+    // Devuelve true si existía y fue eliminado.
+    public boolean eliminarPorNumeroSocio(int numeroSocio) {
+        return usuarios.removeIf(u -> u.getNumeroSocio() == numeroSocio);
+    }
+
     public boolean existeNumeroSocio(int numeroSocio) {
         return buscarPorNumeroSocio(numeroSocio) != null;
     }
@@ -45,9 +63,13 @@ public class RegistroUsuarios {
 
     // Carga algunos socios de ejemplo para poder probar la simulación de acceso
     private void precargarSociosDePrueba() {
-        usuarios.add(new Usuario("Maria Gonzalez", 32, "maria.gonzalez@correo.com", 55510101, 101, 1, true));
-        usuarios.add(new Usuario("Carlos Perez", 45, "carlos.perez@correo.com", 55520202, 102, 2, false));
-        usuarios.add(new Usuario("Lucia Fernandez", 28, "lucia.fernandez@correo.com", 55530303, 103, 3, true));
-        usuarios.add(new Usuario("Jorge Ramirez", 51, "jorge.ramirez@correo.com", 55540404, 104, 4, false));
+        usuarios.add(new Usuario("Maria Gonzalez", 32, "maria.gonzalez@correo.com", 55510101, 101, 1, true,
+                "Juan Gonzalez / 88880001", "Ninguna"));
+        usuarios.add(new Usuario("Carlos Perez", 45, "carlos.perez@correo.com", 55520202, 102, 2, false,
+                "Ana Perez / 88880002", "Asma leve"));
+        usuarios.add(new Usuario("Lucia Fernandez", 28, "lucia.fernandez@correo.com", 55530303, 103, 3, true,
+                "Pedro Fernandez / 88880003", "Ninguna"));
+        usuarios.add(new Usuario("Jorge Ramirez", 51, "jorge.ramirez@correo.com", 55540404, 104, 4, false,
+                "Rosa Ramirez / 88880004", "Hipertensión"));
     }
 }
