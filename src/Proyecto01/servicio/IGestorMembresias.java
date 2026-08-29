@@ -18,8 +18,9 @@ public interface IGestorMembresias {
     //Retorna la membresia del usuario o null si no tiene membresia
     Membresia buscarMembresiaPorUsuario(Usuario usuario);
 
+
     //Elimina la memebresia asociada un socio, si existe, y cancela el plan asociado
-    void eliminarMembresia(Usuario usuario);
+    void eliminarMembresiaDeUsuario(Usuario usuario);
 
 
 }

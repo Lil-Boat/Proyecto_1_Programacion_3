@@ -2,7 +2,7 @@ package Proyecto01.modelo;
 
 public class Usuario extends Persona {
 
-    protected int numeroSocio;
+    protected int numeroUsuario;
     protected int idUsuario;
 
     // Indica si el socio tiene su pago al día (true) o presenta morosidad (false)
@@ -19,23 +19,23 @@ public class Usuario extends Persona {
 
     public Usuario(String nombreCompleto, int edad, String correoElectronico, int telefono, int numeroSocio, int idUsuario) {
         super(nombreCompleto, edad, correoElectronico, telefono);
-        this.numeroSocio = numeroSocio;
+        this.numeroUsuario = numeroSocio;
         this.idUsuario = idUsuario;
     }
 
     public Usuario(String nombreCompleto, int edad, String correoElectronico, int telefono, int numeroSocio, int idUsuario, boolean pagoAlDia) {
         super(nombreCompleto, edad, correoElectronico, telefono);
-        this.numeroSocio = numeroSocio;
+        this.numeroUsuario = numeroSocio;
         this.idUsuario = idUsuario;
         this.pagoAlDia = pagoAlDia;
     }
 
     // Constructor completo: incluye contacto de emergencia y condiciones médicas
     public Usuario(String nombreCompleto, int edad, String correoElectronico, int telefono,
-                   int numeroSocio, int idUsuario, boolean pagoAlDia,
+                   int numeroUsuario, int idUsuario, boolean pagoAlDia,
                    String contactoEmergencia, String condicionesMedicas) {
         super(nombreCompleto, edad, correoElectronico, telefono);
-        this.numeroSocio = numeroSocio;
+        this.numeroUsuario = numeroUsuario;
         this.idUsuario = idUsuario;
         this.pagoAlDia = pagoAlDia;
         this.contactoEmergencia = contactoEmergencia;
@@ -43,7 +43,7 @@ public class Usuario extends Persona {
     }
 
     public void setNumeroSocio(int numeroSocio) {
-        this.numeroSocio = numeroSocio;
+        this.numeroUsuario = numeroSocio;
     }
 
     public void setIdUsuario(int idUsuario) {
@@ -54,8 +54,10 @@ public class Usuario extends Persona {
         return idUsuario;
     }
 
-    public int getNumeroSocio() {
-        return numeroSocio;
+    public int getNumeroUsuario() {
+
+        return numeroUsuario;
+
     }
 
     public boolean isPagoAlDia() {
@@ -71,7 +73,6 @@ public class Usuario extends Persona {
         return contactoEmergencia;
     }
 
-    // Asigna el contacto de emergencia del socio
     public void setContactoEmergencia(String contactoEmergencia) {
         this.contactoEmergencia = contactoEmergencia;
     }
@@ -81,7 +82,6 @@ public class Usuario extends Persona {
         return condicionesMedicas;
     }
 
-    // Asigna las condiciones médicas del socio
     public void setCondicionesMedicas(String condicionesMedicas) {
         this.condicionesMedicas = condicionesMedicas;
     }
@@ -90,7 +90,7 @@ public class Usuario extends Persona {
     public String toString() {
         return "Usuario{" +
                 "nombreCompleto='" + nombreCompleto + '\'' +
-                ", numeroSocio=" + numeroSocio +
+                ", numeroSocio=" + numeroUsuario +
                 ", edad=" + edad +
                 ", idUsuario=" + idUsuario +
                 ", correoElectronico='" + correoElectronico + '\'' +

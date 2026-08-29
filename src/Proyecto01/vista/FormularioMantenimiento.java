@@ -218,7 +218,7 @@ public class FormularioMantenimiento extends JFrame {
         RegistroUsuarios registro = RegistroUsuarios.getInstancia();
 
         // Al ingresar un socio nuevo, evita duplicar el número de socio
-        if (numeroSocioEnEdicion == null && registro.existeNumeroSocio(numeroSocioInt)) {
+        if (numeroSocioEnEdicion == null && registro.existeNumeroUsuario(numeroSocioInt)) {
             JOptionPane.showMessageDialog(this,
                     "Ya existe un socio registrado con el número " + numeroSocioInt + ".",
                     "Número de socio duplicado", JOptionPane.WARNING_MESSAGE);
@@ -270,7 +270,7 @@ public class FormularioMantenimiento extends JFrame {
         txtIdUsuario.setText(String.valueOf(idUsuario));
 
         // Toma el resto de datos desde el registro para completar el formulario
-        Usuario socio = RegistroUsuarios.getInstancia().buscarPorNumeroSocio(numeroSocio);
+        Usuario socio = RegistroUsuarios.getInstancia().buscarPorNumeroUsuario(numeroSocio);
         if (socio == null) {
             return;
         }
@@ -299,7 +299,7 @@ public class FormularioMantenimiento extends JFrame {
                 "¿Desea eliminar al socio número " + numeroSocio + "?",
                 "Confirmar eliminación", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
         if (opcion == JOptionPane.YES_OPTION) {
-            RegistroUsuarios.getInstancia().eliminarPorNumeroSocio(numeroSocio);
+            RegistroUsuarios.getInstancia().eliminarPorNumeroUsuario(numeroSocio);
             limpiarFormulario();
             recargarTabla();
         }
@@ -310,7 +310,7 @@ public class FormularioMantenimiento extends JFrame {
         modeloTabla.setRowCount(0);
         for (Usuario u : RegistroUsuarios.getInstancia().getUsuarios()) {
             modeloTabla.addRow(new Object[]{
-                    u.getNumeroSocio(),
+                    u.getNumeroUsuario(),
                     u.getIdUsuario(),
                     u.getNombreCompleto(),
                     u.getEdad(),

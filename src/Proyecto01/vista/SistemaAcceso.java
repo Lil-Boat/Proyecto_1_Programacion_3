@@ -10,7 +10,7 @@ import java.awt.*;
 public class SistemaAcceso extends JFrame {
 
 
-    protected JTextField txtNumeroSocio;
+    protected JTextField txtNumeroUsuario;
 
     private JButton btnIngresar;
 
@@ -60,8 +60,8 @@ public class SistemaAcceso extends JFrame {
 
         // [Fila 1] Etiqueta + caja de texto para el número de socio
         panelFormulario.add(new JLabel("Número de Socio:"));
-        txtNumeroSocio = new JTextField();
-        panelFormulario.add(txtNumeroSocio);
+        txtNumeroUsuario = new JTextField();
+        panelFormulario.add(txtNumeroUsuario);
 
         // [Fila 2] Etiqueta + resultado de la verificación del pago
         panelFormulario.add(new JLabel("Estado del Pago:"));
@@ -99,7 +99,7 @@ public class SistemaAcceso extends JFrame {
 
         // Verificación en tiempo real: cada vez que se escribe o borra un dígito
         // se vuelve a consultar el registro y se actualiza la etiqueta de resultado
-        txtNumeroSocio.getDocument().addDocumentListener(new DocumentListener() {
+        txtNumeroUsuario.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 verificarAcceso();
@@ -143,7 +143,7 @@ public class SistemaAcceso extends JFrame {
     // Verifica el número de socio digitado y actualiza la etiqueta de resultado
     private void verificarAcceso() {
 
-        String texto = txtNumeroSocio.getText().trim(); //trim elimina espacios en blanco
+        String texto = txtNumeroUsuario.getText().trim(); //trim elimina espacios en blanco
 
         lblResultado.setFont(new Font("Nunito", Font.BOLD, 22));
 
@@ -153,10 +153,10 @@ public class SistemaAcceso extends JFrame {
             return;
         }
 
-        int numeroSocio;
+        int numeroUsuario;
 
         try {
-            numeroSocio = Integer.parseInt(texto);
+            numeroUsuario = Integer.parseInt(texto);
         } catch (NumberFormatException ex) {
             lblResultado.setText("Número de socio inválido");
             lblResultado.setForeground(new Color(255, 140, 0));
@@ -164,17 +164,17 @@ public class SistemaAcceso extends JFrame {
         }
 
         // Busca al socio en el registro compartido con el formulario de mantenimiento
-        Usuario socio = RegistroUsuarios.getInstancia().buscarPorNumeroSocio(numeroSocio);
+        Usuario usuario = RegistroUsuarios.getInstancia().buscarPorNumeroUsuario(numeroUsuario);
 
         // El socio no está registrado en el sistema
-        if (socio == null) {
+        if (usuario == null) {
             lblResultado.setText("Acceso Denegado: socio no registrado");
             lblResultado.setForeground(new Color(255, 140, 0));
             return;
         }
 
         // Pago al día: se permite la entrada
-        if (socio.isPagoAlDia()) {
+        if (usuario.isPagoAlDia()) {
             lblResultado.setText("Acceso Permitido");
             lblResultado.setForeground(new Color(0, 150, 0));
         } else {
@@ -186,7 +186,7 @@ public class SistemaAcceso extends JFrame {
 
     // Restablece la etiqueta de resultado a su mensaje inicial
     private void restablecerEstado() {
-        txtNumeroSocio.setText("");
+        txtNumeroUsuario.setText("");
         lblResultado.setFont(new Font("Nunito", Font.BOLD, 22));
         lblResultado.setText("Ingrese su número de socio");
         lblResultado.setForeground(Color.GRAY);

@@ -29,7 +29,7 @@ public class RegistroUsuarios {
     // Devuelve true si se encontró y actualizó al socio.
     public boolean actualizar(int numeroSocioOriginal, Usuario actualizado) {
         for (int i = 0; i < usuarios.size(); i++) {
-            if (usuarios.get(i).getNumeroSocio() == numeroSocioOriginal) {
+            if (usuarios.get(i).getNumeroUsuario() == numeroSocioOriginal) {
                 usuarios.set(i, actualizado);
                 return true;
             }
@@ -39,18 +39,18 @@ public class RegistroUsuarios {
 
     // Elimina al socio con el número indicado.
     // Devuelve true si existía y fue eliminado.
-    public boolean eliminarPorNumeroSocio(int numeroSocio) {
-        return usuarios.removeIf(u -> u.getNumeroSocio() == numeroSocio);
+    public boolean eliminarPorNumeroUsuario(int numeroUsuario){
+        return usuarios.removeIf(u -> u.getNumeroUsuario() == numeroUsuario);
     }
 
-    public boolean existeNumeroSocio(int numeroSocio) {
-        return buscarPorNumeroSocio(numeroSocio) != null;
+    public boolean existeNumeroUsuario(int numeroUsuario) {
+        return buscarPorNumeroUsuario(numeroUsuario) != null;
     }
 
     // Busca al socio por su número; devuelve null si no existe
-    public Usuario buscarPorNumeroSocio(int numeroSocio) {
+    public Usuario buscarPorNumeroUsuario(int numeroUsuario) {
         for (Usuario usuario : usuarios) {
-            if (usuario.getNumeroSocio() == numeroSocio) {
+            if (usuario.getNumeroUsuario() == numeroUsuario) {
                 return usuario;
             }
         }
