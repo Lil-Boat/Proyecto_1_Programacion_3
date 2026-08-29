@@ -2,20 +2,33 @@ package modelo;
 
 public class Usuario extends Persona {
 
-    protected int numeroSocio;
+    protected int numeroUsuario;
     protected int idUsuario;
+    protected String contactoEmergencia;
+    protected String condicionesMedicas;
 
     public Usuario() {
     }
 
-    public Usuario(String nombreCompleto, int edad, String correoElectronico, int telefono, int numeroSocio, int idUsuario) {
+    public Usuario(String nombreCompleto, int edad, String correoElectronico, int telefono, int numeroUsuario, int idUsuario) {
         super(nombreCompleto, edad, correoElectronico, telefono);
-        this.numeroSocio = numeroSocio;
+        this.numeroUsuario = numeroUsuario;
         this.idUsuario = idUsuario;
     }
 
-    public void setNumeroSocio(int numeroSocio) {
-        this.numeroSocio = numeroSocio;
+    public Usuario(int idUsuario, String nombreCompleto, int telefono, String correoElectronico, String contactoEmergencia, String condicionesMedicas) {
+        super();
+        this.idUsuario = idUsuario;
+        this.numeroUsuario = idUsuario;
+        this.nombreCompleto = nombreCompleto;
+        this.telefono = telefono;
+        this.correoElectronico = correoElectronico;
+        this.contactoEmergencia = contactoEmergencia;
+        this.condicionesMedicas = condicionesMedicas;
+    }
+
+    public void setNumeroSocio(int numeroUsuario) {
+        this.numeroUsuario = numeroUsuario;
     }
 
     public void setIdUsuario(int idUsuario) {
@@ -26,19 +39,37 @@ public class Usuario extends Persona {
         return idUsuario;
     }
 
-    public int getNumeroSocio() {
-        return numeroSocio;
+    public int getNumeroUsuario() {
+        return numeroUsuario;
+    }
+
+    public String getContactoEmergencia() {
+        return contactoEmergencia;
+    }
+
+    public void setContactoEmergencia(String contactoEmergencia) {
+        this.contactoEmergencia = contactoEmergencia;
+    }
+
+    public String getCondicionesMedicas() {
+        return condicionesMedicas;
+    }
+
+    public void setCondicionesMedicas(String condicionesMedicas) {
+        this.condicionesMedicas = condicionesMedicas;
     }
 
     @Override
     public String toString() {
         return "Usuario{" +
                 "nombreCompleto='" + nombreCompleto + '\'' +
-                ", numeroSocio=" + numeroSocio +
+                ", numeroSocio=" + numeroUsuario +
                 ", edad=" + edad +
                 ", idUsuario=" + idUsuario +
                 ", correoElectronico='" + correoElectronico + '\'' +
-                ", telefono=" + telefono +
+                ", telefono='" + telefono + '\'' +
+                ", contactoEmergencia='" + contactoEmergencia + '\'' +
+                ", condicionesMedicas='" + condicionesMedicas + '\'' +
                 '}';
     }
 }
