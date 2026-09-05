@@ -4,6 +4,8 @@ import Proyecto01.modelo.Membresia;
 import Proyecto01.modelo.Plan;
 import Proyecto01.modelo.Usuario;
 
+import java.util.List;
+
 //Contrato para manejar las membresias y los pagos
 public interface IGestorMembresias {
 
@@ -21,6 +23,10 @@ public interface IGestorMembresias {
 
     //Elimina la memebresia asociada un socio, si existe, y cancela el plan asociado
     void eliminarMembresiaDeUsuario(Usuario usuario);
+
+    //Lista todas las membresias registradas en el sistema
+    //Retorna una lista con las membresias
+    List<Membresia> listarMembresias();
 
 
 }

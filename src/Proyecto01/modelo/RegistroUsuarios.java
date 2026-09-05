@@ -8,9 +8,11 @@ public class RegistroUsuarios {
     private static RegistroUsuarios instancia;
 
     private final List<Usuario> usuarios;
+    private final List<Runnable> listeners;
 
     private RegistroUsuarios() {
         usuarios = new ArrayList<>();
+        listeners = new ArrayList<>();
         precargarSociosDePrueba();
     }
 
@@ -23,6 +25,19 @@ public class RegistroUsuarios {
 
     public void registrar(Usuario usuario) {
         usuarios.add(usuario);
+        notificarCambios();
+    }
+
+    public void agregarListener(Runnable listener) {
+        if (listener != null) {
+            listeners.add(listener);
+        }
+    }
+
+    private void notificarCambios() {
+        for (Runnable listener : listeners) {
+            listener.run();
+        }
     }
 
     // Reemplaza al socio con número original indicado por el socio actualizado.
@@ -31,6 +46,7 @@ public class RegistroUsuarios {
         for (int i = 0; i < usuarios.size(); i++) {
             if (usuarios.get(i).getNumeroUsuario() == numeroSocioOriginal) {
                 usuarios.set(i, actualizado);
+                notificarCambios();
                 return true;
             }
         }
@@ -40,7 +56,11 @@ public class RegistroUsuarios {
     // Elimina al socio con el número indicado.
     // Devuelve true si existía y fue eliminado.
     public boolean eliminarPorNumeroUsuario(int numeroUsuario){
-        return usuarios.removeIf(u -> u.getNumeroUsuario() == numeroUsuario);
+        boolean eliminado = usuarios.removeIf(u -> u.getNumeroUsuario() == numeroUsuario);
+        if (eliminado) {
+            notificarCambios();
+        }
+        return eliminado;
     }
 
     public boolean existeNumeroUsuario(int numeroUsuario) {

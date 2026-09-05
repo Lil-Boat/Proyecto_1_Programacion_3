@@ -1,19 +1,24 @@
 package Proyecto01.servicio;
 
+import Proyecto01.modelo.RegistroUsuarios;
 import Proyecto01.modelo.Usuario;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GestorUsuarios implements IGestorUsuarios {
 
-    private final Repositorio<Usuario> usuarios;
     private final IGestorMembresias gestorMembresias;
+    private final RegistroUsuarios registroUsuarios;
     private int siguienteNumeroUsuario;
 
     public GestorUsuarios(IGestorMembresias gestorMembresias) {
-        this.usuarios = new Repositorio<>();
         this.gestorMembresias = gestorMembresias;
-        this.siguienteNumeroUsuario = 1;
+        this.registroUsuarios = RegistroUsuarios.getInstancia();
+        this.siguienteNumeroUsuario = registroUsuarios.getUsuarios().stream()
+                .mapToInt(Usuario::getNumeroUsuario)
+                .max()
+                .orElse(0) + 1;
     }
 
     @Override
@@ -22,11 +27,11 @@ public class GestorUsuarios implements IGestorUsuarios {
         if (nombreCompleto == null || nombreCompleto.trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre del socio es obligatorio.");
         }
-        // El número de socio y el ID se asignan automáticamente en forma consecutiva
+
         Usuario usuario = new Usuario(nombreCompleto, edad, correoElectronico, telefono,
                 siguienteNumeroUsuario, siguienteNumeroUsuario, pagoAlDia,
                 contactoEmergencia, condicionesMedicas);
-        usuarios.agregar(usuario);
+        registroUsuarios.registrar(usuario);
         siguienteNumeroUsuario++;
         return usuario;
     }
@@ -34,17 +39,17 @@ public class GestorUsuarios implements IGestorUsuarios {
     @Override
     public void eliminarUsuario(Usuario usuario) {
         gestorMembresias.eliminarMembresiaDeUsuario(usuario);
-        usuarios.eliminar(usuario);
+        registroUsuarios.eliminarPorNumeroUsuario(usuario.getNumeroUsuario());
     }
 
     @Override
     public List<Usuario> listarUsuarios() {
-        return usuarios.obtenerTodos();
+        return new ArrayList<>(registroUsuarios.getUsuarios());
     }
 
     @Override
     public Usuario buscarUsuarioPorNumero(int numeroUsuario) {
-        return usuarios.buscar(s -> s.getNumeroUsuario() == numeroUsuario);
+        return registroUsuarios.buscarPorNumeroUsuario(numeroUsuario);
     }
 
 

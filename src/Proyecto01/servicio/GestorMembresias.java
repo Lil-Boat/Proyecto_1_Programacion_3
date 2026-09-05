@@ -4,6 +4,8 @@ import Proyecto01.modelo.Membresia;
 import Proyecto01.modelo.Plan;
 import Proyecto01.modelo.Usuario;
 
+import java.util.List;
+
 public class GestorMembresias implements IGestorMembresias {
         private final Repositorio<Membresia> membresias;
 
@@ -42,5 +44,10 @@ public class GestorMembresias implements IGestorMembresias {
         public void eliminarMembresiaDeUsuario(Usuario usuario) {
             Membresia membresia = buscarMembresiaPorUsuario(usuario);
             if (membresia != null) membresias.eliminar(membresia);
+        }
+
+        @Override
+        public List<Membresia> listarMembresias() {
+            return membresias.obtenerTodos();
         }
 }
