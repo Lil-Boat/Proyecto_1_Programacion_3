@@ -7,35 +7,72 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 
-public class SistemaAcceso extends JFrame {
+/**
+ * ============================================================================
+ *  SistemaAcceso - Panel de simulacion de acceso al gimnasio.
+ * ============================================================================
+ *  ¿QUE HACE ESTA CLASE?
+ *  Simula la entrada de un socio al gimnasio: el usuario escribe su numero de
+ *  socio y el sistema decide si le permite entrar o no.
+ *
+ *  Logica de verificacion (verificarAcceso):
+ *    1. Campo vacio            -> mensaje inicial "Ingrese su número de socio".
+ *    2. No es un numero        -> "Número de socio inválido"      (naranja)
+ *    3. No esta registrado     -> "Acceso Denegado: socio no registrado" (naranja)
+ *    4. Registrado y al dia    -> "Acceso Permitido"              (verde)
+ *    5. Registrado y moroso    -> "Acceso Denegado por Morosidad" (rojo)
+ *
+ *   La verificacion es EN TIEMPO REAL: cada tecla que se escribe en la caja
+ *   de texto dispara la consulta (DocumentListener), sin necesidad de pulsar
+ *   el boton Ingresar.
+ *
+ *  Datos:
+ *    Consulta el SINGLETON RegistroUsuarios, el mismo registro compartido con
+ *    FormularioMantenimiento. Por eso un socio dado de alta ahi ya puede
+ *    intentar ingresar desde esta pantalla.
+ */
+public class SistemaAcceso extends JPanel {
 
-
+    // Caja de texto donde se escribe el numero de socio a verificar
     protected JTextField txtNumeroUsuario;
 
+    // Boton que muestra el resultado de la verificacion en una ventana
     private JButton btnIngresar;
 
-    // Botón para borrar las cajas de texto
+    // Boton para borrar la caja de texto
     private JButton btnLimpiar;
 
-    // Botón para abrir el formulario de mantenimiento de usuarios
+    // Boton para ir al mantenimiento de usuarios (opcional, ver constructor).
+    // Si el constructor no recibe una accion de navegacion, queda oculto.
     private JButton btnMantenimiento;
 
-    // Etiqueta que muestra el resultado de la verificación en tiempo real
+    // Etiqueta que muestra el resultado de la verificacion en tiempo real,
+    // cambiando su texto y color segun el estado del socio.
     private JLabel lblResultado;
 
+    /**
+     * Constructor sin argumentos: crea el panel sin accion para el boton de
+     * mantenimiento (llama al otro constructor pasandole null).
+     * Con null, el boton "Inscripción de Usuarios" queda oculto.
+     */
     public SistemaAcceso() {
+        this(null);
+    }
 
-        setTitle("Sistema de Acceso");
-
-        // Dimensiones: 1280 píxeles de ancho por 720 de alto
-        setSize(600, 300);
-
-        // Al tocar la 'X', el programa se detiene por completo
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // Centra la ventana en la pantalla del monitor
-        setLocationRelativeTo(null);
-
+    /**
+     * Constructor principal: construye toda la interfaz grafica del panel.
+     *
+     * @param irAMantenimiento accion a ejecutar al pulsar "Inscripción de Usuarios"
+     *                         (por ejemplo, cambiar a la pestaña de mantenimiento
+     *                         en la ventana principal). Si es null, el boton se oculta.
+     *
+     * Estructura de la ventana (BorderLayout):
+     *   NORTH  -> titulo "Simulación de Acceso"
+     *   CENTER -> formulario: [Número de Socio] + [Estado del Pago]
+     *   SOUTH  -> botones: Limpiar / Ingresar / Inscripción de Usuarios
+     */
+    public SistemaAcceso(Runnable irAMantenimiento) {
+        setLayout(new BorderLayout());
 
         // Contenedor principal con BorderLayout (5 regiones) y 10px de separación
         JPanel panelPrincipal = new JPanel(new BorderLayout(10, 10));
@@ -46,16 +83,17 @@ public class SistemaAcceso extends JFrame {
         // Etiqueta de texto centrada para el título del formulario
         JLabel lblTitulo = new JLabel("Simulación de Acceso", SwingConstants.CENTER);
 
-        // Aplica tipografía en negrita (BOLD) y tamaño 30
+        // Aplica tipografía en negrita (BOLD) y tamaño 18
         lblTitulo.setFont(new Font("Nunito", Font.BOLD, 18));
 
-        // Color del texto: negro
+        // Color del texto
         lblTitulo.setForeground(new Color(200, 16, 46));
 
         // Lo coloca en la región superior (NORTH) del panel principal
         panelPrincipal.add(lblTitulo, BorderLayout.NORTH);
 
-
+        // Formulario central: rejilla de 3 filas x 2 columnas [etiqueta, campo]
+        // (la fila 3 queda sin usar; el espacio sobrante es para estetica)
         JPanel panelFormulario = new JPanel(new GridLayout(3, 2, 8, 8));
 
         // [Fila 1] Etiqueta + caja de texto para el número de socio
@@ -63,26 +101,27 @@ public class SistemaAcceso extends JFrame {
         txtNumeroUsuario = new JTextField();
         panelFormulario.add(txtNumeroUsuario);
 
-        // [Fila 2] Etiqueta + resultado de la verificación del pago
+        // [Fila 2] Etiqueta + resultado de la verificación del pago.
+        // La etiqueta se actualiza sola (en tiempo real) mientras se escribe.
         panelFormulario.add(new JLabel("Estado del Pago:"));
         lblResultado = new JLabel("Ingrese su número de socio", SwingConstants.CENTER);
         lblResultado.setFont(new Font("Nunito", Font.BOLD, 18));
         lblResultado.setForeground(Color.GRAY);
         panelFormulario.add(lblResultado);
 
-
         // Coloca el formulario en el área central (CENTER) del panel principal
         panelPrincipal.add(panelFormulario, BorderLayout.CENTER);
 
+        // Panel de botones alineados a la derecha
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
 
         // Botón para borrar el campo (etiqueta 'Limpiar')
         btnLimpiar = new JButton("Limpiar");
 
-        // Botón para verificar el acceso
+        // Botón para verificar el acceso (muestra el resultado en una ventana)
         btnIngresar = new JButton("Ingresar");
 
-        // Botón para abrir el registro de usuarios (mantenimiento)
+        // Botón para ir al registro de usuarios (mantenimiento)
         btnMantenimiento = new JButton("Inscripción de Usuarios");
 
         // Agrega los botones al panel secundario
@@ -93,30 +132,36 @@ public class SistemaAcceso extends JFrame {
         // Coloca el panel de botones en la región inferior (SOUTH)
         panelPrincipal.add(panelBotones, BorderLayout.SOUTH);
 
-        // Agrega el panel principal al JFrame
-        add(panelPrincipal);
+        // Agrega el panel principal al panel de este componente
+        add(panelPrincipal, BorderLayout.CENTER);
 
+
+        // -----------------------------------------------------------------
+        // LISTENERS (conexion entre los componentes y su comportamiento)
+        // -----------------------------------------------------------------
 
         // Verificación en tiempo real: cada vez que se escribe o borra un dígito
-        // se vuelve a consultar el registro y se actualiza la etiqueta de resultado
+        // en la caja de texto, se vuelve a consultar el registro y se actualiza
+        // la etiqueta de resultado. Por eso los 3 eventos llaman a verificarAcceso().
         txtNumeroUsuario.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                verificarAcceso();
+                verificarAcceso(); // Se inserto texto
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                verificarAcceso();
+                verificarAcceso(); // Se borro texto
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                verificarAcceso();
+                verificarAcceso(); // Cambio de atributos (formato)
             }
         });
 
-        // Listener del botón Ingresar: muestra el resultado en una ventana
+        // Listener del botón Ingresar: verifica y muestra el resultado en una ventana.
+        // No es obligatorio usarlo, el resultado ya se ve en la etiqueta.
         btnIngresar.addActionListener(e -> {
             verificarAcceso();
             JOptionPane.showMessageDialog(this,
@@ -128,69 +173,80 @@ public class SistemaAcceso extends JFrame {
         // Listener del botón Limpiar: borra la caja de texto y restablece el estado
         btnLimpiar.addActionListener(e -> restablecerEstado());
 
-        // Listener del botón Mantenimiento: abre el formulario de registro de usuarios
-        btnMantenimiento.addActionListener(e -> {
-            FormularioMantenimiento formulario = new FormularioMantenimiento();
-
-            // Al cerrar el formulario secundario solo se oculta, sin detener la aplicación
-            formulario.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            formulario.setVisible(true);
-        });
-
-
+        // Listener del botón Mantenimiento: ejecuta la navegación indicada,
+        // o se oculta si no se recibió ninguna acción
+        if (irAMantenimiento != null) {
+            btnMantenimiento.addActionListener(e -> irAMantenimiento.run());
+        } else {
+            btnMantenimiento.setVisible(false);
+        }
     }
 
-    // Verifica el número de socio digitado y actualiza la etiqueta de resultado
+    /**
+     * Corazon de la clase: verifica el numero de socio digitado y actualiza la
+     * etiqueta de resultado con su texto y color correspondiente.
+     *
+     * Flujo de decision:
+     *   1) Campo vacio               -> restablece el mensaje inicial.
+     *   2) No es un numero entero    -> "Número de socio inválido" (naranja).
+     *   3) No esta en el registro    -> "Acceso Denegado: socio no registrado" (naranja).
+     *   4) Esta y pago al dia        -> "Acceso Permitido" (verde).
+     *   5) Esta pero pago vencido    -> "Acceso Denegado por Morosidad" (rojo).
+     */
     private void verificarAcceso() {
 
-        String texto = txtNumeroUsuario.getText().trim(); //trim elimina espacios en blanco
+        // Leer lo que escribio el usuario; trim() elimina espacios en blanco
+        String texto = txtNumeroUsuario.getText().trim();
 
+        // Ajusta el tamaño de la fuente del resultado (un poco mas grande)
         lblResultado.setFont(new Font("Nunito", Font.BOLD, 22));
 
-        // Campo vacío: aún no hay nada que verificar
+        // 1) Campo vacío: aún no hay nada que verificar
         if (texto.isEmpty()) {
             restablecerEstado();
             return;
         }
 
+        // 2) Convierte el texto a numero entero; si no es numerico avisa y sale
         int numeroUsuario;
-
         try {
             numeroUsuario = Integer.parseInt(texto);
         } catch (NumberFormatException ex) {
             lblResultado.setText("Número de socio inválido");
-            lblResultado.setForeground(new Color(255, 140, 0));
+            lblResultado.setForeground(new Color(255, 140, 0)); // naranja
             return;
         }
 
         // Busca al socio en el registro compartido con el formulario de mantenimiento
         Usuario usuario = RegistroUsuarios.getInstancia().buscarPorNumeroUsuario(numeroUsuario);
 
-        // El socio no está registrado en el sistema
+        // 3) El socio no está registrado en el sistema
         if (usuario == null) {
             lblResultado.setText("Acceso Denegado: socio no registrado");
-            lblResultado.setForeground(new Color(255, 140, 0));
+            lblResultado.setForeground(new Color(255, 140, 0)); // naranja
             return;
         }
 
-        // Pago al día: se permite la entrada
+        // 4) Pago al día: se permite la entrada
         if (usuario.isPagoAlDia()) {
             lblResultado.setText("Acceso Permitido");
-            lblResultado.setForeground(new Color(0, 150, 0));
+            lblResultado.setForeground(new Color(0, 150, 0)); // verde
         } else {
-            // Pago vencido: se deniega la entrada por morosidad
+            // 5) Pago vencido: se deniega la entrada por morosidad
             lblResultado.setText("Acceso Denegado por Morosidad");
-            lblResultado.setForeground(new Color(200, 16, 46));
+            lblResultado.setForeground(new Color(200, 16, 46)); // rojo
         }
     }
 
-    // Restablece la etiqueta de resultado a su mensaje inicial
+    /**
+     * Restablece el panel a su estado inicial: vacia la caja de texto y muestra
+     * el mensaje por defecto "Ingrese su número de socio" en color gris.
+     * Se usa tanto con el boton Limpiar como cuando el campo esta vacio.
+     */
     private void restablecerEstado() {
-        txtNumeroUsuario.setText("");
+        txtNumeroUsuario.setText("");        // Borra la caja de texto
         lblResultado.setFont(new Font("Nunito", Font.BOLD, 22));
         lblResultado.setText("Ingrese su número de socio");
         lblResultado.setForeground(Color.GRAY);
     }
-
-
 }

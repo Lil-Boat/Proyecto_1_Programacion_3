@@ -1,22 +1,21 @@
 package Proyecto01;
 
-import Proyecto01.vista.SistemaAcceso;
+import Proyecto01.vista.VentanaPrincipal;
+import javax.swing.*;
 
 public class Main {
+    public static void main(String[] args) {
 
-    void main() {
-        System.out.println("¡Hola Mundo!");
+        SwingUtilities.invokeLater(() -> {
+            VentanaPrincipal ventanaPrincipal = new VentanaPrincipal();
+            ventanaPrincipal.setVisible(true);
+        });
 
 
 
-            // Construye la ventana del sistema de acceso llamando a su constructor
-            SistemaAcceso ventana = new SistemaAcceso();
 
-            // La hace visible (por defecto las ventanas nacen invisibles)
-            ventana.setVisible(true);
 
 
 
     }
-
 }

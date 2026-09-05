@@ -8,58 +8,89 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 /**
- * Ventana de Mantenimiento de Socios del gimnasio.
- * Permite ingresar, editar, eliminar y listar socios, incluyendo su
- * contacto de emergencia y sus condiciones médicas básicas.
+ * ============================================================================
+ *  FormularioMantenimiento - Panel de Mantenimiento de Socios del gimnasio.
+ * ============================================================================
+ *  ¿QUE HACE ESTA CLASE?
+ *  Es la pantalla de administracion (CRUD) de los socios del gimnasio. Permite:
+ *    1. INGRESAR un socio nuevo              -> boton Guardar
+ *    2. EDITAR los datos de un socio         -> boton "Editar seleccionado"
+ *    3. ELIMINAR un socio                    -> boton "Eliminar seleccionado"
+ *    4. LISTAR todos los socios              -> tabla central
+ *
+ *  La interfaz se divide en 3 zonas:
+ *    - Arriba : formulario con los datos del socio: nombre, correo, telefono,
+ *               edad, numero de socio, ID de usuario, casilla "pago al dia",
+ *               contacto de emergencia y condiciones medicas.
+ *    - Centro : tabla con todos los socios registrados.
+ *    - Abajo  : botones Limpiar / Guardar / Editar / Eliminar.
+ *
+ *  Datos:
+ *    Trabaja sobre el SINGLETON RegistroUsuarios, por lo que comparte la misma
+ *    lista de socios con SistemaAcceso: si aqui registras a un socio, en
+ *    SistemaAcceso ya puede intentar ingresar al gimnasio.
  */
-public class FormularioMantenimiento extends JFrame {
+public class FormularioMantenimiento extends JPanel {
 
-    // Campos de texto con los datos personales del socio
-    protected JTextField txtNombre;
-    protected JTextField txtCorreo;
-    protected JTextField txtTelefono;
-    protected JTextField txtEdad;
-    protected JTextField txtNumeroSocio;
-    protected JTextField txtIdUsuario;
-    protected JTextField txtContactoEmergencia;
-    protected JTextField txtCondicionesMedicas;
+    // ===================== CAMPOS DE TEXTO DEL FORMULARIO =====================
+    // Guardan los datos personales que el usuario escribe en la pantalla.
+    // Son 'protected' para permitir acceso desde subclases si hiciera falta.
+    protected JTextField txtNombre;             // Nombre completo del socio
+    protected JTextField txtCorreo;             // Correo electronico del socio
+    protected JTextField txtTelefono;           // Telefono de contacto
+    protected JTextField txtEdad;               // Edad (validada entre 0 y 120)
+    protected JTextField txtNumeroSocio;        // Numero unico que identifica al socio
+    protected JTextField txtIdUsuario;          // ID interno del usuario en el sistema
+    protected JTextField txtContactoEmergencia; // Contacto de emergencia (opcional)
+    protected JTextField txtCondicionesMedicas; // Condiciones medicas (opcional)
 
-    // Casilla que indica si el socio tiene su pago al día
+    // Casilla que indica si el socio tiene su pago al dia (mensualidad al dia)
     private JCheckBox chkPagoAlDia;
 
-    // Botones de acción del formulario
-    private JButton btnGuardar;
-    private JButton btnLimpiar;
-    private JButton btnEditar;
-    private JButton btnEliminar;
+    // ================================ BOTONES ==================================
+    private JButton btnGuardar;   // Registra un socio nuevo o guarda los cambios al editar
+    private JButton btnLimpiar;   // Vacia todos los campos y sale del modo edicion
+    private JButton btnEditar;    // Carga en el formulario los datos de la fila seleccionada
+    private JButton btnEliminar;  // Borra al socio de la fila seleccionada
 
-    // Tabla y modelo que muestran los socios registrados
-    private JTable tablaSocios;
-    private DefaultTableModel modeloTabla;
+    // ========================== TABLA DE SOCIOS REGISTRADOS ====================
+    private JTable tablaSocios;           // Componente visual que muestra los socios
+    private DefaultTableModel modeloTabla;// Modelo que define columnas y filas de la tabla
 
-    // Número de socio que se está editando; null significa modo "nuevo ingreso"
+    // Numero de socio que se esta editando actualmente:
+    //   null  -> modo "nuevo ingreso"  (el Guardar llama a registrar())
+    //   valor -> modo "edicion"        (el Guardar llama a actualizar())
     private Integer numeroSocioEnEdicion = null;
 
-    // Crea la ventana, construye la interfaz y carga la lista de socios
+    /**
+     * Constructor: construye toda la interfaz grafica del panel.
+     * Organiza el contenido con BorderLayout:
+     *   NORTH  -> titulo
+     *   CENTER -> arriba el formulario de datos + abajo la tabla (GridLayout 2x1)
+     *   SOUTH  -> botones de accion
+     * Al final conecta los eventos (configurarListeners) y carga los socios
+     * que ya existen en el registro (recargarTabla).
+     */
     public FormularioMantenimiento() {
-        setTitle("Mantenimiento de Socios - Gimnasio");
-        setSize(1280, 720);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
 
         // Contenedor principal con BorderLayout y margen interno
         JPanel panelPrincipal = new JPanel(new BorderLayout(5, 10));
         panelPrincipal.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // Título de la ventana
+        // Titulo del panel, centrado y en negrita
         JLabel lblTitulo = new JLabel("Mantenimiento de Socios", SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Nunito", Font.BOLD, 30));
         panelPrincipal.add(lblTitulo, BorderLayout.NORTH);
 
-        // Panel central que divide el espacio entre formulario y tabla
+        // Panel central que divide el espacio verticalmente: arriba el
+        // formulario de datos y abajo la tabla de socios.
         JPanel panelCentral = new JPanel(new GridLayout(2, 1, 5, 10));
 
-        // ----- Formulario de datos del socio -----
+        // -----------------------------------------------------------------
+        // FORMULARIO DE DATOS DEL SOCIO
+        // Rejilla de 9 filas x 2 columnas: cada fila es [etiqueta, campo]
+        // -----------------------------------------------------------------
         JPanel panelFormulario = new JPanel(new GridLayout(9, 2, 8, 8));
         panelFormulario.setBorder(BorderFactory.createTitledBorder("Datos del socio"));
 
@@ -83,7 +114,8 @@ public class FormularioMantenimiento extends JFrame {
         txtEdad = new JTextField();
         panelFormulario.add(txtEdad);
 
-        // [Fila 5] Número de socio: etiqueta y caja juntas en la misma celda
+        // [Fila 5] Numero de socio: etiqueta y caja juntas en la misma celda,
+        // para que el campo corto conserve su ancho (no se estire con el grid)
         JPanel filaNumeroSocio = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         filaNumeroSocio.add(new JLabel("Número de Socio:"));
         txtNumeroSocio = new JTextField();
@@ -92,34 +124,41 @@ public class FormularioMantenimiento extends JFrame {
         panelFormulario.add(filaNumeroSocio);
         panelFormulario.add(new JLabel("")); // La celda de la derecha queda libre
 
-        // [Fila 6] ID de usuario
+        // [Fila 6] ID de usuario (campo corto, igual que el numero de socio)
         panelFormulario.add(new JLabel("ID de Usuario:"));
         txtIdUsuario = new JTextField();
         txtIdUsuario.setColumns(8);     // Ancho acorde al tamaño de un ID
         panelFormulario.add(envolverCampoCorto(txtIdUsuario));
 
-        // [Fila 7] Pago al día
+        // [Fila 7] Pago al dia: casilla marcada por defecto
         panelFormulario.add(new JLabel("Pago al día:"));
         chkPagoAlDia = new JCheckBox();
         chkPagoAlDia.setSelected(true);
         panelFormulario.add(chkPagoAlDia);
 
-        // [Fila 8] Contacto de emergencia
+        // [Fila 8] Contacto de emergencia (campo opcional)
         panelFormulario.add(new JLabel("Contacto de Emergencia:"));
         txtContactoEmergencia = new JTextField();
         panelFormulario.add(txtContactoEmergencia);
 
-        // [Fila 9] Condiciones médicas
+        // [Fila 9] Condiciones medicas (campo opcional)
         panelFormulario.add(new JLabel("Condiciones Médicas:"));
         txtCondicionesMedicas = new JTextField();
         panelFormulario.add(txtCondicionesMedicas);
 
+        // Se agrega el formulario a la mitad superior del panel central
         panelCentral.add(panelFormulario);
 
-        // ----- Tabla de socios registrados -----
+        // ----------------------------------------------------------------
+        // TABLA DE SOCIOS REGISTRADOS (mitad inferior del panel central)
+        // ----------------------------------------------------------------
+        // Se definen las 7 columnas que mostrara la tabla
         modeloTabla = new DefaultTableModel(
                 new String[]{"Nº Socio", "ID", "Nombre", "Edad", "Pago al día",
                         "Contacto de emergencia", "Condiciones médicas"}, 0);
+
+        // Crea la tabla a partir del modelo y la pone dentro de un JScrollPane
+        // (asi tiene titulo y barra de desplazamiento si hay muchos socios)
         tablaSocios = new JTable(modeloTabla);
         JScrollPane scrollTabla = new JScrollPane(tablaSocios);
         scrollTabla.setBorder(BorderFactory.createTitledBorder("Socios registrados"));
@@ -127,7 +166,9 @@ public class FormularioMantenimiento extends JFrame {
 
         panelPrincipal.add(panelCentral, BorderLayout.CENTER);
 
-        // ----- Panel de botones -----
+        // -----------------------------------------------------------------
+        // PANEL DE BOTONES (parte inferior de la ventana)
+        // -----------------------------------------------------------------
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         btnLimpiar = new JButton("Limpiar");
         btnGuardar = new JButton("Guardar");
@@ -139,21 +180,28 @@ public class FormularioMantenimiento extends JFrame {
         panelBotones.add(btnEliminar);
         panelPrincipal.add(panelBotones, BorderLayout.SOUTH);
 
-        add(panelPrincipal);
+        add(panelPrincipal, BorderLayout.CENTER);
 
         // Conecta los eventos de los botones y de la tabla
         configurarListeners();
 
-        // Muestra los socios que ya están registrados
-        recargarTabla(  );
+        // Muestra los socios que ya estan registrados
+        recargarTabla();
     }
 
-    // Registra los listeners de los botones y de la selección de la tabla
+    /**
+     * Conecta cada componente con su comportamiento:
+     * - Guardar  -> valida y registra/actualiza al socio
+     * - Limpiar  -> vacia el formulario
+     * - Editar   -> carga la fila seleccionada en el formulario
+     * - Eliminar -> borra al socio de la fila seleccionada
+     * - Tabla    -> al hacer clic en una fila, los datos se cargan para editar
+     */
     private void configurarListeners() {
         // Al hacer clic en Guardar se valida y registra o actualiza al socio
         btnGuardar.addActionListener(e -> guardarSocio());
 
-        // Al hacer clic en Limpiar se vacían los campos y se sale del modo edición
+        // Al hacer clic en Limpiar se vacian los campos y se sale del modo edicion
         btnLimpiar.addActionListener(e -> limpiarFormulario());
 
         // Al hacer clic en Editar se cargan los datos de la fila seleccionada
@@ -162,7 +210,8 @@ public class FormularioMantenimiento extends JFrame {
         // Al hacer clic en Eliminar se borra al socio de la fila seleccionada
         btnEliminar.addActionListener(e -> eliminarSocioSeleccionado());
 
-        // Al seleccionar una fila de la tabla se rellenan los campos para editarla
+        // Al seleccionar una fila de la tabla se rellenan los campos para editarla.
+        // (getValueIsAdjusting() evita que el evento se dispare dos veces por clic)
         tablaSocios.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 cargarSocioSeleccionado();
@@ -170,8 +219,19 @@ public class FormularioMantenimiento extends JFrame {
         });
     }
 
-    // Lee y valida los campos del formulario; luego guarda (nuevo o actualización)
+    /**
+     * Guarda al socio en el registro (RegistroUsuarios).
+     * Flujo del metodo:
+     *   1. Lee los valores de los campos del formulario.
+     *   2. Valida que los campos personales obligatorios no esten vacios.
+     *   3. Convierte los campos numericos; si no son numeros, avisa y aborta.
+     *   4. Valida que la edad este entre 0 y 120.
+     *   5. Si es un socio NUEVO, evita duplicar el numero de socio.
+     *   6. Crea el objeto Usuario y lo REGISTRA (nuevo) o ACTUALIZA (edicion).
+     *   7. Limpia el formulario, recarga la tabla y confirma con un mensaje.
+     */
     private void guardarSocio() {
+        // 1) Lee y limpia de espacios en blanco cada campo del formulario
         String nombre = txtNombre.getText().trim();
         String correo = txtCorreo.getText().trim();
         String telefono = txtTelefono.getText().trim();
@@ -181,7 +241,8 @@ public class FormularioMantenimiento extends JFrame {
         String contacto = txtContactoEmergencia.getText().trim();
         String condiciones = txtCondicionesMedicas.getText().trim();
 
-        // Valida que los campos personales obligatorios no estén vacíos
+        // 2) Valida que los campos personales obligatorios no esten vacios.
+        //    (contacto de emergencia y condiciones medicas SI pueden quedar vacios)
         if (nombre.isEmpty() || correo.isEmpty() || telefono.isEmpty() || edad.isEmpty()
                 || numeroSocio.isEmpty() || idUsuario.isEmpty()) {
             JOptionPane.showMessageDialog(this,
@@ -190,7 +251,8 @@ public class FormularioMantenimiento extends JFrame {
             return;
         }
 
-        // Convierte los campos numéricos y atrapa entradas no numéricas
+        // 3) Convierte los campos numericos y atrapa entradas no numericas.
+        //    Si falla el parseInt, la excepcion se muestra como aviso y se salta.
         int edadInt;
         int telefonoInt;
         int numeroSocioInt;
@@ -207,7 +269,7 @@ public class FormularioMantenimiento extends JFrame {
             return;
         }
 
-        // Rechaza edades fuera de un rango razonable
+        // 4) Rechaza edades fuera de un rango razonable
         if (edadInt < 0 || edadInt > 120) {
             JOptionPane.showMessageDialog(this,
                     "La edad debe estar entre 0 y 120 años.",
@@ -215,9 +277,11 @@ public class FormularioMantenimiento extends JFrame {
             return;
         }
 
+        // Obtiene la (unica) instancia del registro de socios (Singleton)
         RegistroUsuarios registro = RegistroUsuarios.getInstancia();
 
-        // Al ingresar un socio nuevo, evita duplicar el número de socio
+        // 5) Al ingresar un socio nuevo, evita duplicar el numero de socio.
+        //    OJO: si se esta EDITANDO, el numero ya existia, por eso no se chequea.
         if (numeroSocioEnEdicion == null && registro.existeNumeroUsuario(numeroSocioInt)) {
             JOptionPane.showMessageDialog(this,
                     "Ya existe un socio registrado con el número " + numeroSocioInt + ".",
@@ -225,45 +289,61 @@ public class FormularioMantenimiento extends JFrame {
             return;
         }
 
-        // Construye el socio con toda la información del formulario
+        // 6) Construye el socio con toda la informacion del formulario
         Usuario socio = new Usuario(nombre, edadInt, correo, telefonoInt,
                 numeroSocioInt, idUsuarioInt, chkPagoAlDia.isSelected(),
                 contacto, condiciones);
 
-        // Si no se está editando, registra el socio; si se edita, lo reemplaza
+        // Si NO se esta editando -> registrar() agrega un socio nuevo.
+        // Si SI se esta editando -> actualizar() reemplaza al socio cuyo numero
+        //                            original es numeroSocioEnEdicion.
         if (numeroSocioEnEdicion == null) {
             registro.registrar(socio);
         } else {
             registro.actualizar(numeroSocioEnEdicion, socio);
         }
 
+        // 7) Limpia el formulario, recarga la tabla y confirma la operacion
         limpiarFormulario();
         recargarTabla();
         JOptionPane.showMessageDialog(this,
                 "Datos guardados correctamente: " + nombre);
     }
-// Envuelve un campo en un panel FlowLayout para que conserven su ancho
-    // preferido en lugar de estirarse con el GridLayout.
-    // Recibe el campo a envolver y lo devuelve dentro de un panel angosto,
-    // conservando el tamaño lógico que indiquen sus columnas.
+
+    /**
+     * Envuelve un campo en un panel FlowLayout para que conserve su ancho
+     * preferido en lugar de estirarse con el GridLayout.
+     * Recibe el campo a envolver y lo devuelve dentro de un panel angosto,
+     * conservando el tamaño logico que indiquen sus columnas.
+     * (Se usa en los campos cortos: numero de socio e ID de usuario.)
+     */
     private JPanel envolverCampoCorto(JComponent campo) {
         JPanel contenedor = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         contenedor.add(campo);
         return contenedor;
     }
 
-    // Carga en el formulario los datos del socio de la fila seleccionada
+    /**
+     * Carga en el formulario los datos del socio de la fila seleccionada.
+     * 1. Obtiene la fila seleccionada; si no hay ninguna, no hace nada.
+     * 2. Toma numero de socio, ID, nombre y edad directamente de la tabla.
+     * 3. Busca el resto de datos (correo, telefono, etc.) en el registro.
+     * 4. Rellena los campos y activa el "modo edicion" guardando el numero
+     *    de socio original en numeroSocioEnEdicion.
+     */
     private void cargarSocioSeleccionado() {
         int fila = tablaSocios.getSelectedRow();
         if (fila < 0) {
-            return;
+            return; // No hay ninguna fila seleccionada
         }
 
+        // Lee los datos que estan disponibles directamente en la tabla
         int numeroSocio = (Integer) modeloTabla.getValueAt(fila, 0);
         int idUsuario = (Integer) modeloTabla.getValueAt(fila, 1);
         String nombre = (String) modeloTabla.getValueAt(fila, 2);
         int edad = (Integer) modeloTabla.getValueAt(fila, 3);
 
+        // Rellena los campos que ya estaban en la tabla
         txtNombre.setText(nombre);
         txtEdad.setText(String.valueOf(edad));
         txtNumeroSocio.setText(String.valueOf(numeroSocio));
@@ -272,7 +352,7 @@ public class FormularioMantenimiento extends JFrame {
         // Toma el resto de datos desde el registro para completar el formulario
         Usuario socio = RegistroUsuarios.getInstancia().buscarPorNumeroUsuario(numeroSocio);
         if (socio == null) {
-            return;
+            return; // Por seguridad: socio no encontrado
         }
         txtCorreo.setText(socio.getCorreoElectronico());
         txtTelefono.setText(String.valueOf(socio.getTelefono()));
@@ -280,24 +360,36 @@ public class FormularioMantenimiento extends JFrame {
         txtContactoEmergencia.setText(socio.getContactoEmergencia());
         txtCondicionesMedicas.setText(socio.getCondicionesMedicas());
 
-        // Activa el modo edición recordando el número de socio original
+        // Activa el modo edicion recordando el numero de socio original.
+        // Asi, al pulsar Guardar se actualizara ese socio en lugar de registrar
+        // uno nuevo.
         numeroSocioEnEdicion = numeroSocio;
     }
 
-    // Elimina al socio de la fila seleccionada tras la confirmación del usuario
+    /**
+     * Elimina al socio de la fila seleccionada, PERO primero pide confirmacion.
+     * Si el usuario confirma, se borra del registro, se limpia el formulario
+     * y se recarga la tabla para reflejar el cambio.
+     */
     private void eliminarSocioSeleccionado() {
         int fila = tablaSocios.getSelectedRow();
         if (fila < 0) {
+            // No hay nada seleccionado: se avisa y no se hace nada
             JOptionPane.showMessageDialog(this,
                     "Seleccione un socio en la tabla para eliminarlo.",
                     "Sin selección", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
+        // Toma el numero de socio de la fila seleccionada
         int numeroSocio = (Integer) modeloTabla.getValueAt(fila, 0);
+
+        // Pide confirmacion al usuario antes de eliminar (ventana Si/No)
         int opcion = JOptionPane.showConfirmDialog(this,
                 "¿Desea eliminar al socio número " + numeroSocio + "?",
                 "Confirmar eliminación", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+
+        // Solo borra si el usuario pulso "Si"
         if (opcion == JOptionPane.YES_OPTION) {
             RegistroUsuarios.getInstancia().eliminarPorNumeroUsuario(numeroSocio);
             limpiarFormulario();
@@ -305,10 +397,16 @@ public class FormularioMantenimiento extends JFrame {
         }
     }
 
-    // Vuelve a llenar la tabla con todos los socios del registro
+    /**
+     * Vuelve a llenar la tabla con todos los socios del registro.
+     * Primero vacia el modelo (setRowCount(0)) y luego recorre la lista de
+     * usuarios agregando una fila por cada uno, con el orden de columnas
+     * definido en el modelo de la tabla.
+     */
     private void recargarTabla() {
-        modeloTabla.setRowCount(0);
+        modeloTabla.setRowCount(0); // Limpia las filas anteriores
         for (Usuario u : RegistroUsuarios.getInstancia().getUsuarios()) {
+            // Agrega una fila por cada socio registrado
             modeloTabla.addRow(new Object[]{
                     u.getNumeroUsuario(),
                     u.getIdUsuario(),
@@ -321,7 +419,10 @@ public class FormularioMantenimiento extends JFrame {
         }
     }
 
-    // Vacía los campos del formulario y sale del modo edición
+    /**
+     * Vacia los campos del formulario, restablece la casilla "pago al dia",
+     * quita la seleccion de la tabla y sale del modo edicion (null).
+     */
     private void limpiarFormulario() {
         txtNombre.setText("");
         txtCorreo.setText("");
@@ -331,8 +432,8 @@ public class FormularioMantenimiento extends JFrame {
         txtIdUsuario.setText("");
         txtContactoEmergencia.setText("");
         txtCondicionesMedicas.setText("");
-        chkPagoAlDia.setSelected(true);
-        tablaSocios.clearSelection();
-        numeroSocioEnEdicion = null;
+        chkPagoAlDia.setSelected(true);  // Vuelve al estado inicial (pago al dia)
+        tablaSocios.clearSelection();    // Deselecciona cualquier fila
+        numeroSocioEnEdicion = null;     // Sale del modo edicion: el proximo Guardar registra uno nuevo
     }
 }
