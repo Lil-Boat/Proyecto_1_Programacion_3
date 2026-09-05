@@ -16,7 +16,7 @@ public class VentanaPrincipal extends JFrame {
 
         JTabbedPane pestanas = new JTabbedPane();
 
-        FormularioMantenimiento panelMantenimiento = new FormularioMantenimiento();
+        PanelUsuarios panelMantenimiento = new PanelUsuarios();
 
         // El botón "Inscripción de Usuarios" del SistemaAcceso cambia a la
         // pestaña de Mantenimiento en lugar de abrir una ventana nueva

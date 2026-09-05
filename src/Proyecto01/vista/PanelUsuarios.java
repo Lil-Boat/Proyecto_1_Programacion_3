@@ -9,7 +9,7 @@ import java.awt.*;
 
 /**
  * ============================================================================
- *  FormularioMantenimiento - Panel de Mantenimiento de Socios del gimnasio.
+ *  PanelUsuarios - Panel de Mantenimiento de Socios del gimnasio.
  * ============================================================================
  *  ¿QUE HACE ESTA CLASE?
  *  Es la pantalla de administracion (CRUD) de los socios del gimnasio. Permite:
@@ -30,7 +30,7 @@ import java.awt.*;
  *    lista de socios con SistemaAcceso: si aqui registras a un socio, en
  *    SistemaAcceso ya puede intentar ingresar al gimnasio.
  */
-public class FormularioMantenimiento extends JPanel {
+public class PanelUsuarios extends JPanel {
 
     // ===================== CAMPOS DE TEXTO DEL FORMULARIO =====================
     // Guardan los datos personales que el usuario escribe en la pantalla.
@@ -71,7 +71,7 @@ public class FormularioMantenimiento extends JPanel {
      * Al final conecta los eventos (configurarListeners) y carga los socios
      * que ya existen en el registro (recargarTabla).
      */
-    public FormularioMantenimiento() {
+    public PanelUsuarios() {
         setLayout(new BorderLayout());
 
         // Contenedor principal con BorderLayout y margen interno

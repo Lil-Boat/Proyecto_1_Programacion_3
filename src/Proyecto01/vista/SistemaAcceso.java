@@ -28,7 +28,7 @@ import java.awt.*;
  *
  *  Datos:
  *    Consulta el SINGLETON RegistroUsuarios, el mismo registro compartido con
- *    FormularioMantenimiento. Por eso un socio dado de alta ahi ya puede
+ *    PanelUsuarios. Por eso un socio dado de alta ahi ya puede
  *    intentar ingresar desde esta pantalla.
  */
 public class SistemaAcceso extends JPanel {

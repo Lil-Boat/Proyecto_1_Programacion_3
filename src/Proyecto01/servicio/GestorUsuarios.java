@@ -32,13 +32,13 @@ public class GestorUsuarios implements IGestorUsuarios {
     }
 
     @Override
-    public void eliminarSocio(Usuario usuario) {
+    public void eliminarUsuario(Usuario usuario) {
         gestorMembresias.eliminarMembresiaDeUsuario(usuario);
         usuarios.eliminar(usuario);
     }
 
     @Override
-    public List<Usuario> listarSocios() {
+    public List<Usuario> listarUsuarios() {
         return usuarios.obtenerTodos();
     }
 

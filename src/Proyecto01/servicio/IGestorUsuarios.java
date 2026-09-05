@@ -12,9 +12,9 @@ public interface IGestorUsuarios {
     Usuario registrarUsuario(String nombreCompleto, int edad, String correoElectronico, int telefono,
                              boolean pagoAlDia, String contactoEmergencia, String condicionesMedicas);
 
-    void eliminarSocio(Usuario usuario);
+    void eliminarUsuario(Usuario usuario);
 
-    List<Usuario> listarSocios();
+    List<Usuario> listarUsuarios();
 
     Usuario buscarUsuarioPorNumero(int numeroUsuario);
 
