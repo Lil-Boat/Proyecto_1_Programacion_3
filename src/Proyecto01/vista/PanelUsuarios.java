@@ -174,6 +174,8 @@ public class PanelUsuarios extends JPanel {
         btnGuardar = new JButton("Guardar");
         btnEditar = new JButton("Editar seleccionado");
         btnEliminar = new JButton("Eliminar seleccionado");
+        btnEditar.setEnabled(false);
+        btnEliminar.setEnabled(false);
         panelBotones.add(btnLimpiar);
         panelBotones.add(btnGuardar);
         panelBotones.add(btnEditar);
@@ -210,11 +212,15 @@ public class PanelUsuarios extends JPanel {
         // Al hacer clic en Eliminar se borra al socio de la fila seleccionada
         btnEliminar.addActionListener(e -> eliminarSocioSeleccionado());
 
-        // Al seleccionar una fila de la tabla se rellenan los campos para editarla.
-        // (getValueIsAdjusting() evita que el evento se dispare dos veces por clic)
+        // Al seleccionar una fila, solo se habilitan los botones de accion.
+        // El formulario no se rellena automaticamente ni se entra en modo edicion
+        // al hacer click sobre la fila: la edicion debe producirse solo al pulsar
+        // el boton "Editar seleccionado".
         tablaSocios.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                cargarSocioSeleccionado();
+                boolean haySeleccion = tablaSocios.getSelectedRow() >= 0;
+                btnEditar.setEnabled(haySeleccion);
+                btnEliminar.setEnabled(haySeleccion);
             }
         });
     }
@@ -434,6 +440,8 @@ public class PanelUsuarios extends JPanel {
         txtCondicionesMedicas.setText("");
         chkPagoAlDia.setSelected(true);  // Vuelve al estado inicial (pago al dia)
         tablaSocios.clearSelection();    // Deselecciona cualquier fila
+        btnEditar.setEnabled(false);
+        btnEliminar.setEnabled(false);
         numeroSocioEnEdicion = null;     // Sale del modo edicion: el proximo Guardar registra uno nuevo
     }
 }
